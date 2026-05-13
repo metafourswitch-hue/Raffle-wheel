@@ -1,0 +1,1585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Elimination Raffle Wheel - Fixed Name List</title>
+  <style>
+    :root {
+      --bg: #09111f;
+      --panel: rgba(15, 23, 42, 0.92);
+      --panel-soft: rgba(30, 41, 59, 0.8);
+      --text: #f8fafc;
+      --muted: #cbd5e1;
+      --line: rgba(148, 163, 184, 0.25);
+      --accent: #38bdf8;
+      --danger: #fb7185;
+      --success: #34d399;
+      --warning: #fbbf24;
+      --shadow: 0 20px 60px rgba(0,0,0,0.35);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      height: 100%;
+      background:
+        radial-gradient(circle at 20% 15%, rgba(56,189,248,0.20), transparent 28%),
+        radial-gradient(circle at 75% 5%, rgba(251,191,36,0.13), transparent 26%),
+        radial-gradient(circle at 80% 80%, rgba(52,211,153,0.13), transparent 28%),
+        var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overflow: hidden;
+    }
+
+    button, input, textarea, select {
+      font: inherit;
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: minmax(310px, 400px) 1fr;
+      height: 100vh;
+      gap: 18px;
+      padding: 18px;
+      transition: grid-template-columns 280ms ease;
+    }
+
+    body.controls-hidden .app {
+      grid-template-columns: 0 1fr;
+      padding-left: 0;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      transition: transform 280ms ease, opacity 220ms ease, width 280ms ease;
+      min-width: 0;
+    }
+
+    body.controls-hidden .control-panel {
+      transform: translateX(-106%);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .control-panel {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .panel-header {
+      padding: 18px 20px 14px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(15, 23, 42, 0.86);
+    }
+
+    .panel-header h1 {
+      margin: 0;
+      font-size: 1.25rem;
+      letter-spacing: -0.025em;
+    }
+
+    .panel-header p {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.35;
+    }
+
+    .controls {
+      padding: 16px 18px 22px;
+      overflow: auto;
+    }
+
+    .section {
+      padding: 14px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .section:first-child {
+      padding-top: 0;
+    }
+
+    .section:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    label {
+      display: block;
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 700;
+      margin-bottom: 7px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    textarea, input[type="number"], input[type="text"], input[type="file"] {
+      width: 100%;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(2, 6, 23, 0.58);
+      color: var(--text);
+      padding: 10px 12px;
+      outline: none;
+    }
+
+    input[type="file"] {
+      color: var(--muted);
+      font-size: 0.87rem;
+    }
+
+    textarea {
+      min-height: 180px;
+      resize: vertical;
+      line-height: 1.35;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      align-items: end;
+    }
+
+    .row-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      align-items: end;
+    }
+
+    .check-row {
+      display: flex;
+      gap: 9px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 0.94rem;
+      line-height: 1.3;
+      margin-top: 10px;
+    }
+
+    .check-row input {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent);
+    }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 12px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 14px;
+      color: #02111e;
+      background: var(--accent);
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 120ms ease, filter 120ms ease, opacity 120ms ease;
+      box-shadow: 0 10px 22px rgba(56,189,248,0.20);
+    }
+
+    button:hover { transform: translateY(-1px); filter: brightness(1.05); }
+    button:active { transform: translateY(0); filter: brightness(0.96); }
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.45;
+      transform: none;
+      filter: grayscale(0.3);
+    }
+
+    .secondary {
+      background: rgba(148, 163, 184, 0.18);
+      color: var(--text);
+      border: 1px solid var(--line);
+      box-shadow: none;
+    }
+
+    .danger {
+      background: var(--danger);
+      color: #fff;
+      box-shadow: 0 10px 22px rgba(251,113,133,0.18);
+    }
+
+    .success {
+      background: var(--success);
+      color: #02140e;
+      box-shadow: 0 10px 22px rgba(52,211,153,0.18);
+    }
+
+    .warning {
+      background: var(--warning);
+      color: #221300;
+      box-shadow: 0 10px 22px rgba(251,191,36,0.18);
+    }
+
+    .small {
+      padding: 8px 11px;
+      font-size: 0.86rem;
+    }
+
+    .tiny-note {
+      color: var(--muted);
+      font-size: 0.78rem;
+      line-height: 1.35;
+      margin-top: 8px;
+    }
+
+    .show-panel {
+      position: relative;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      min-width: 0;
+      padding: 18px;
+    }
+
+    .top-strip {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 12px;
+      min-height: 52px;
+    }
+
+    .brand {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .brand .title {
+      font-size: clamp(1.15rem, 2vw, 2rem);
+      font-weight: 900;
+      letter-spacing: -0.05em;
+    }
+
+    .brand .subtitle {
+      color: var(--muted);
+      font-weight: 650;
+      letter-spacing: 0.01em;
+      font-size: 0.95rem;
+    }
+
+    .status-card {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      align-items: center;
+    }
+
+    .pill {
+      border-radius: 999px;
+      padding: 8px 12px;
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid var(--line);
+      color: var(--muted);
+      font-weight: 800;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+      white-space: nowrap;
+      font-size: 0.9rem;
+    }
+
+    .pill strong {
+      color: var(--text);
+    }
+
+    .stage {
+      position: relative;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: minmax(430px, 1fr) minmax(260px, 360px);
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    body.controls-hidden .stage {
+      grid-template-columns: minmax(540px, 1fr) minmax(260px, 390px);
+    }
+
+    .wheel-wrap {
+      position: relative;
+      min-height: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.08), transparent 60%);
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      overflow: hidden;
+    }
+
+    canvas#wheel {
+      width: min(82vh, 100%);
+      max-width: 820px;
+      aspect-ratio: 1 / 1;
+      display: block;
+      filter: drop-shadow(0 26px 44px rgba(0,0,0,0.35));
+    }
+
+    .pointer {
+      position: absolute;
+      top: calc(50% - min(41vh, 410px) - 12px);
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 26px solid transparent;
+      border-right: 26px solid transparent;
+      border-top: 58px solid #f8fafc;
+      filter: drop-shadow(0 8px 10px rgba(0,0,0,0.35));
+      z-index: 5;
+    }
+
+    .center-cap {
+      position: absolute;
+      width: min(13vh, 130px);
+      height: min(13vh, 130px);
+      border-radius: 50%;
+      background: rgba(248, 250, 252, 0.95);
+      box-shadow: inset 0 0 0 10px rgba(15, 23, 42, 0.12), 0 15px 35px rgba(0,0,0,0.32);
+      display: grid;
+      place-items: center;
+      color: #0f172a;
+      font-weight: 1000;
+      letter-spacing: -0.06em;
+      font-size: min(3.2vh, 34px);
+      z-index: 4;
+      user-select: none;
+    }
+
+    .side-show {
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      gap: 12px;
+      min-height: 0;
+    }
+
+    .announcement {
+      min-height: 190px;
+      background: rgba(15,23,42,0.78);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .announcement .label {
+      color: var(--muted);
+      font-weight: 900;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .announcement .name {
+      font-size: clamp(2.2rem, 5vw, 4.7rem);
+      font-weight: 1000;
+      letter-spacing: -0.065em;
+      line-height: 0.94;
+      overflow-wrap: anywhere;
+    }
+
+    .announcement.eliminated .name {
+      color: var(--danger);
+      text-shadow: 0 0 24px rgba(251,113,133,0.22);
+    }
+
+    .announcement.winner .name {
+      color: var(--success);
+      text-shadow: 0 0 24px rgba(52,211,153,0.24);
+    }
+
+    .announcement .message {
+      color: var(--muted);
+      font-size: clamp(1rem, 1.5vw, 1.2rem);
+      line-height: 1.35;
+      font-weight: 650;
+    }
+
+    .timer-card {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 12px;
+      background: rgba(15,23,42,0.65);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+    }
+
+    .timer-card .timer-label {
+      color: var(--muted);
+      font-weight: 850;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      font-size: 0.82rem;
+    }
+
+    .timer-card .timer {
+      font-weight: 1000;
+      font-size: clamp(2rem, 4vw, 4rem);
+      letter-spacing: -0.06em;
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
+    }
+
+    .list-card {
+      min-height: 0;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      background: rgba(15,23,42,0.65);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .list-title {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .list {
+      overflow: auto;
+      padding: 10px 12px 14px;
+      min-height: 0;
+    }
+
+    .person {
+      padding: 9px 10px;
+      border-radius: 12px;
+      margin-bottom: 7px;
+      background: rgba(148, 163, 184, 0.11);
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      color: var(--text);
+      font-weight: 750;
+    }
+
+    .person small {
+      color: var(--muted);
+      font-weight: 800;
+      min-width: 32px;
+      text-align: right;
+    }
+
+    .person.elim {
+      opacity: 0.8;
+      color: #fecdd3;
+      background: rgba(251, 113, 133, 0.12);
+      text-decoration: line-through;
+      text-decoration-thickness: 2px;
+    }
+
+    .bottom-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding-top: 12px;
+      min-height: 50px;
+    }
+
+    .help {
+      color: var(--muted);
+      font-size: 0.85rem;
+      line-height: 1.35;
+    }
+
+    .floating-show {
+      position: fixed;
+      left: 13px;
+      top: 16px;
+      z-index: 20;
+      display: none;
+      box-shadow: var(--shadow);
+    }
+
+    body.controls-hidden .floating-show {
+      display: block;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%) translateY(16px);
+      opacity: 0;
+      pointer-events: none;
+      background: rgba(15, 23, 42, 0.95);
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 10px 14px;
+      box-shadow: var(--shadow);
+      font-weight: 800;
+      transition: opacity 180ms ease, transform 180ms ease;
+      z-index: 30;
+    }
+
+    .toast.visible {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .pulse {
+      animation: pulse 900ms ease-in-out infinite alternate;
+    }
+
+    @keyframes pulse {
+      from { transform: scale(1); }
+      to { transform: scale(1.025); }
+    }
+
+    .confetti-piece {
+      position: fixed;
+      top: -20px;
+      width: 9px;
+      height: 14px;
+      opacity: 0.95;
+      z-index: 25;
+      pointer-events: none;
+      animation: fall linear forwards;
+    }
+
+    @keyframes fall {
+      to {
+        transform: translateY(110vh) rotate(720deg);
+      }
+    }
+
+    @media (max-width: 1050px) {
+      html, body { overflow: auto; }
+      .app {
+        height: auto;
+        min-height: 100vh;
+        grid-template-columns: 1fr;
+      }
+      body.controls-hidden .app {
+        grid-template-columns: 1fr;
+        padding-left: 18px;
+      }
+      .stage,
+      body.controls-hidden .stage {
+        grid-template-columns: 1fr;
+      }
+      .side-show {
+        grid-template-rows: auto auto minmax(260px, 1fr);
+      }
+      .pointer {
+        top: 16px;
+      }
+      body.controls-hidden .control-panel {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <button class="floating-show small" id="showControlsBtn">Show controls</button>
+
+  <main class="app">
+    <aside class="panel control-panel" id="controlPanel">
+      <div class="panel-header">
+        <h1>Jackson PC Raffle</h1>
+        <p>Paste names, start the raffle, then hide this control panel for projector mode.</p>
+      </div>
+
+      <div class="controls">
+        <div class="section">
+          <label for="namesInput">Raffle entries, one per line</label>
+          <textarea id="namesInput" spellcheck="false" placeholder="Avery&#10;Blake&#10;Casey&#10;Drew"></textarea>
+          <div class="btn-row">
+            <button class="secondary small" id="cleanNamesBtn">Clean names</button>
+            <button class="secondary small" id="shuffleBtn">Shuffle wheel</button>
+            <button class="secondary small" id="saveBtn">Save setup</button>
+          </div>
+          <div class="tiny-note">Blank lines are ignored. Duplicate names are kept unless you click “clean names,” which removes exact duplicates.</div>
+        </div>
+
+        <div class="section">
+          <div class="row">
+            <div>
+              <label for="spinSeconds">Spin length, seconds</label>
+              <input id="spinSeconds" type="number" min="3" step="1" value="300" />
+            </div>
+            <div>
+              <label for="intermissionSeconds">Intermission, seconds</label>
+              <input id="intermissionSeconds" type="number" min="0" step="1" value="20" />
+            </div>
+          </div>
+          <div class="row" style="margin-top:10px;">
+            <button class="warning small" id="setRealBtn">Set 5:00 spin</button>
+            <button class="secondary small" id="setTestBtn">Set 10 sec test</button>
+          </div>
+          <label class="check-row">
+            <input id="autoContinue" type="checkbox" checked />
+            Auto-start next spin after intermission
+          </label>
+          <label class="check-row">
+            <input id="speakToggle" type="checkbox" checked />
+            Announce eliminations out loud
+          </label>
+          <label class="check-row">
+            <input id="showRemainingOnly" type="checkbox" checked />
+            Show remaining names on the wheel after each elimination
+          </label>
+        </div>
+
+        <div class="section">
+          <label>Spin music intensity files</label>
+          <div class="row" style="margin-top:0;">
+            <div>
+              <label for="spinMusicFile1" style="font-size:0.72rem;">Level 1: Full field</label>
+              <input id="spinMusicFile1" type="file" accept="audio/*" />
+            </div>
+            <div>
+              <label for="spinMusicFile2" style="font-size:0.72rem;">Level 2</label>
+              <input id="spinMusicFile2" type="file" accept="audio/*" />
+            </div>
+          </div>
+          <div class="row" style="margin-top:10px;">
+            <div>
+              <label for="spinMusicFile3" style="font-size:0.72rem;">Level 3</label>
+              <input id="spinMusicFile3" type="file" accept="audio/*" />
+            </div>
+            <div>
+              <label for="spinMusicFile4" style="font-size:0.72rem;">Level 4</label>
+              <input id="spinMusicFile4" type="file" accept="audio/*" />
+            </div>
+          </div>
+          <div class="row" style="margin-top:10px;">
+            <div>
+              <label for="spinMusicFile5" style="font-size:0.72rem;">Level 5</label>
+              <input id="spinMusicFile5" type="file" accept="audio/*" />
+            </div>
+            <div>
+              <label for="spinMusicFile6" style="font-size:0.72rem;">Level 6: Final stretch</label>
+              <input id="spinMusicFile6" type="file" accept="audio/*" />
+            </div>
+          </div>
+          <div class="tiny-note">The app picks music automatically by elimination percentage. Level 1 plays early; Level 6 plays when only the final few remain. If a level is empty, it uses the closest earlier loaded level.</div>
+
+          <div style="height:12px"></div>
+
+          <label for="fanfareFile">Elimination fanfare file</label>
+          <input id="fanfareFile" type="file" accept="audio/*" />
+
+          <div style="height:12px"></div>
+
+          <label for="winnerFanfareFile">Winner fanfare file, optional</label>
+          <input id="winnerFanfareFile" type="file" accept="audio/*" />
+          <div class="tiny-note">If no winner fanfare is selected, the elimination fanfare is used for the final winner.</div>
+        </div>
+
+        <div class="section">
+          <div class="btn-row">
+            <button class="success" id="startBtn">Start raffle</button>
+            <button class="secondary" id="hideBtn">Hide UI</button>
+            <button class="secondary" id="fullscreenBtn">Fullscreen</button>
+          </div>
+          <div class="btn-row">
+            <button class="secondary small" id="skipIntermissionBtn">Skip intermission</button>
+            <button class="secondary small" id="stopAudioBtn">Stop audio</button>
+            <button class="danger small" id="resetBtn">Reset raffle</button>
+          </div>
+          <div class="tiny-note">
+            Shortcuts: H = hide/show controls, F = fullscreen, Esc = exit fullscreen. The raffle runs automatically until one winner remains.
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <section class="panel show-panel">
+      <div class="top-strip">
+        <div class="brand">
+          <div class="title" id="showTitle">Jackson PC Raffle</div>
+          <div class="subtitle" id="showSubtitle">Load names, then start the show.</div>
+        </div>
+        <div class="status-card">
+          <div class="pill">Round <strong id="roundText">0</strong></div>
+          <div class="pill">Remaining <strong id="remainingText">0</strong></div>
+          <div class="pill">Eliminated <strong id="eliminatedText">0</strong></div>
+        </div>
+      </div>
+
+      <div class="stage">
+        <div class="wheel-wrap">
+          <div class="pointer" aria-hidden="true"></div>
+          <canvas id="wheel" width="1100" height="1100" aria-label="Raffle wheel"></canvas>
+          <div class="center-cap" id="centerCap">READY</div>
+        </div>
+
+        <div class="side-show">
+          <div class="announcement" id="announcement">
+            <div class="label" id="announcementLabel">Ready</div>
+            <div class="name" id="announcementName">Starting Soon</div>
+            <div class="message" id="announcementMessage">Chat Is on the Left</div>
+          </div>
+
+          <div class="timer-card">
+            <div>
+              <div class="timer-label" id="timerLabel">Timer</div>
+              <div class="help" id="timerHelp">Spin and intermission countdowns appear here.</div>
+            </div>
+            <div class="timer" id="timer">--:--</div>
+          </div>
+
+          <div class="list-card">
+            <div class="list-title">
+              <span id="listTitle">Remaining</span>
+              <span id="listCount">0</span>
+            </div>
+            <div class="list" id="peopleList"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bottom-bar">
+        <div class="help" id="bottomHelp"></div>
+        <button class="secondary small" id="quickHideBtn">Hide controls</button>
+      </div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <audio id="spinMusic1" preload="auto" loop></audio>
+  <audio id="spinMusic2" preload="auto" loop></audio>
+  <audio id="spinMusic3" preload="auto" loop></audio>
+  <audio id="spinMusic4" preload="auto" loop></audio>
+  <audio id="spinMusic5" preload="auto" loop></audio>
+  <audio id="spinMusic6" preload="auto" loop></audio>
+  <audio id="fanfare" preload="auto"></audio>
+  <audio id="winnerFanfare" preload="auto"></audio>
+
+  <script>
+    // =========================
+    // Easy defaults to customize
+    // =========================
+    // You can select audio files in the UI. If you prefer default local files,
+    // put files beside this HTML and change these paths, for example:
+    // const DEFAULT_SPIN_MUSIC_1 = "Stage 1.mp3";
+    // const DEFAULT_SPIN_MUSIC_2 = "Stage 2.mp3";
+    // const DEFAULT_SPIN_MUSIC_3 = "Stage 3.mp3";
+    // const DEFAULT_SPIN_MUSIC_4 = "Stage 4.mp3";
+    // const DEFAULT_SPIN_MUSIC_5 = "Stage 5.mp3";
+    // const DEFAULT_SPIN_MUSIC_6 = "Stage 6.mp3";
+    // const DEFAULT_FANFARE = "fanfare.mp3";
+    // const DEFAULT_WINNER_FANFARE = "winner-fanfare.mp3";
+    const DEFAULT_SPIN_MUSIC_1 = "Stage 1.mp3";
+    const DEFAULT_SPIN_MUSIC_2 = "Stage 2.mp3";
+    const DEFAULT_SPIN_MUSIC_3 = "Stage 3.mp3";
+    const DEFAULT_SPIN_MUSIC_4 = "Stage 4.mp3";
+    const DEFAULT_SPIN_MUSIC_5 = "Stage 5.mp3";
+    const DEFAULT_SPIN_MUSIC_6 = "Stage 6.mp3";
+    const DEFAULT_FANFARE = "Eliminated.mp3";
+    const DEFAULT_WINNER_FANFARE = "You Win.mp3";
+
+    const SAMPLE_NAMES = [
+      "Avery Johnson",
+      "Blake Miller",
+      "Casey Davis",
+      "Drew Wilson",
+      "Emerson Taylor",
+      "Finley Anderson",
+      "Gray Parker",
+      "Harper Moore",
+      "Jordan King",
+      "Kai Morgan",
+      "Logan Reed",
+      "Morgan Lee"
+    ].join("\n");
+
+    const COLORS = [
+      "#38bdf8", "#fb7185", "#34d399", "#fbbf24",
+      "#a78bfa", "#f472b6", "#22d3ee", "#fb923c",
+      "#84cc16", "#60a5fa", "#f87171", "#c084fc"
+    ];
+
+    const state = {
+      originalNames: [],
+      activeNames: [],
+      eliminated: [],
+      round: 0,
+      mode: "setup",
+      rotation: 0,
+      spinStartTime: 0,
+      spinDurationMs: 300000,
+      spinFrom: 0,
+      spinTo: 0,
+      selectedIndex: -1,
+      selectedName: "",
+      timerInterval: null,
+      intermissionRemaining: 0,
+      intermissionTimeout: null,
+      rafId: null
+    };
+
+    const els = {
+      namesInput: document.getElementById("namesInput"),
+      cleanNamesBtn: document.getElementById("cleanNamesBtn"),
+      shuffleBtn: document.getElementById("shuffleBtn"),
+      saveBtn: document.getElementById("saveBtn"),
+      spinSeconds: document.getElementById("spinSeconds"),
+      intermissionSeconds: document.getElementById("intermissionSeconds"),
+      autoContinue: document.getElementById("autoContinue"),
+      speakToggle: document.getElementById("speakToggle"),
+      showRemainingOnly: document.getElementById("showRemainingOnly"),
+      setRealBtn: document.getElementById("setRealBtn"),
+      setTestBtn: document.getElementById("setTestBtn"),
+      spinMusicFile1: document.getElementById("spinMusicFile1"),
+      spinMusicFile2: document.getElementById("spinMusicFile2"),
+      spinMusicFile3: document.getElementById("spinMusicFile3"),
+      spinMusicFile4: document.getElementById("spinMusicFile4"),
+      spinMusicFile5: document.getElementById("spinMusicFile5"),
+      spinMusicFile6: document.getElementById("spinMusicFile6"),
+      fanfareFile: document.getElementById("fanfareFile"),
+      winnerFanfareFile: document.getElementById("winnerFanfareFile"),
+      startBtn: document.getElementById("startBtn"),
+      hideBtn: document.getElementById("hideBtn"),
+      quickHideBtn: document.getElementById("quickHideBtn"),
+      showControlsBtn: document.getElementById("showControlsBtn"),
+      fullscreenBtn: document.getElementById("fullscreenBtn"),
+      skipIntermissionBtn: document.getElementById("skipIntermissionBtn"),
+      stopAudioBtn: document.getElementById("stopAudioBtn"),
+      resetBtn: document.getElementById("resetBtn"),
+      wheel: document.getElementById("wheel"),
+      centerCap: document.getElementById("centerCap"),
+      showTitle: document.getElementById("showTitle"),
+      showSubtitle: document.getElementById("showSubtitle"),
+      roundText: document.getElementById("roundText"),
+      remainingText: document.getElementById("remainingText"),
+      eliminatedText: document.getElementById("eliminatedText"),
+      announcement: document.getElementById("announcement"),
+      announcementLabel: document.getElementById("announcementLabel"),
+      announcementName: document.getElementById("announcementName"),
+      announcementMessage: document.getElementById("announcementMessage"),
+      timerLabel: document.getElementById("timerLabel"),
+      timerHelp: document.getElementById("timerHelp"),
+      timer: document.getElementById("timer"),
+      listTitle: document.getElementById("listTitle"),
+      listCount: document.getElementById("listCount"),
+      peopleList: document.getElementById("peopleList"),
+      bottomHelp: document.getElementById("bottomHelp"),
+      toast: document.getElementById("toast"),
+      spinMusic1: document.getElementById("spinMusic1"),
+      spinMusic2: document.getElementById("spinMusic2"),
+      spinMusic3: document.getElementById("spinMusic3"),
+      spinMusic4: document.getElementById("spinMusic4"),
+      spinMusic5: document.getElementById("spinMusic5"),
+      spinMusic6: document.getElementById("spinMusic6"),
+      fanfare: document.getElementById("fanfare"),
+      winnerFanfare: document.getElementById("winnerFanfare")
+    };
+
+    const ctx = els.wheel.getContext("2d");
+
+    function init() {
+      const saved = loadSetup();
+      if (saved) {
+        els.namesInput.value = saved.names || SAMPLE_NAMES;
+        els.spinSeconds.value = saved.spinSeconds || 300;
+        els.intermissionSeconds.value = saved.intermissionSeconds || 20;
+        els.autoContinue.checked = saved.autoContinue !== false;
+        els.speakToggle.checked = saved.speakToggle !== false;
+        els.showRemainingOnly.checked = saved.showRemainingOnly !== false;
+      } else {
+        els.namesInput.value = SAMPLE_NAMES;
+      }
+
+      if (DEFAULT_SPIN_MUSIC_1) els.spinMusic1.src = DEFAULT_SPIN_MUSIC_1;
+      if (DEFAULT_SPIN_MUSIC_2) els.spinMusic2.src = DEFAULT_SPIN_MUSIC_2;
+      if (DEFAULT_SPIN_MUSIC_3) els.spinMusic3.src = DEFAULT_SPIN_MUSIC_3;
+      if (DEFAULT_SPIN_MUSIC_4) els.spinMusic4.src = DEFAULT_SPIN_MUSIC_4;
+      if (DEFAULT_SPIN_MUSIC_5) els.spinMusic5.src = DEFAULT_SPIN_MUSIC_5;
+      if (DEFAULT_SPIN_MUSIC_6) els.spinMusic6.src = DEFAULT_SPIN_MUSIC_6;
+      if (DEFAULT_FANFARE) els.fanfare.src = DEFAULT_FANFARE;
+      if (DEFAULT_WINNER_FANFARE) els.winnerFanfare.src = DEFAULT_WINNER_FANFARE;
+
+      wireEvents();
+      prepareNamesFromInput(false);
+      drawWheel();
+      updateUI();
+    }
+
+    function wireEvents() {
+      els.cleanNamesBtn.addEventListener("click", cleanNames);
+      els.shuffleBtn.addEventListener("click", () => {
+        if (isRunning()) return showToast("Reset before shuffling during a raffle.");
+        prepareNamesFromInput(true);
+        shuffleArray(state.activeNames);
+        state.originalNames = [...state.activeNames];
+        els.namesInput.value = state.originalNames.join("\n");
+        drawWheel();
+        updateUI();
+        showToast("Wheel shuffled.");
+      });
+      els.saveBtn.addEventListener("click", saveSetup);
+      els.setRealBtn.addEventListener("click", () => {
+        els.spinSeconds.value = 300;
+        showToast("Spin set to 5 minutes.");
+      });
+      els.setTestBtn.addEventListener("click", () => {
+        els.spinSeconds.value = 10;
+        showToast("Spin set to 10 seconds for testing.");
+      });
+      els.spinMusicFile1.addEventListener("change", () => attachAudioFile(els.spinMusicFile1, els.spinMusic1));
+      els.spinMusicFile2.addEventListener("change", () => attachAudioFile(els.spinMusicFile2, els.spinMusic2));
+      els.spinMusicFile3.addEventListener("change", () => attachAudioFile(els.spinMusicFile3, els.spinMusic3));
+      els.spinMusicFile4.addEventListener("change", () => attachAudioFile(els.spinMusicFile4, els.spinMusic4));
+      els.spinMusicFile5.addEventListener("change", () => attachAudioFile(els.spinMusicFile5, els.spinMusic5));
+      els.spinMusicFile6.addEventListener("change", () => attachAudioFile(els.spinMusicFile6, els.spinMusic6));
+      els.fanfareFile.addEventListener("change", () => attachAudioFile(els.fanfareFile, els.fanfare));
+      els.winnerFanfareFile.addEventListener("change", () => attachAudioFile(els.winnerFanfareFile, els.winnerFanfare));
+      els.startBtn.addEventListener("click", startRaffle);
+      els.hideBtn.addEventListener("click", toggleControls);
+      els.quickHideBtn.addEventListener("click", toggleControls);
+      els.showControlsBtn.addEventListener("click", toggleControls);
+      els.fullscreenBtn.addEventListener("click", toggleFullscreen);
+      els.skipIntermissionBtn.addEventListener("click", skipIntermission);
+      els.stopAudioBtn.addEventListener("click", stopAllAudio);
+      els.resetBtn.addEventListener("click", resetRaffle);
+      els.namesInput.addEventListener("input", () => {
+        if (!isRunning()) {
+          prepareNamesFromInput(false);
+          drawWheel();
+          updateUI();
+        }
+      });
+      els.showRemainingOnly.addEventListener("change", () => {
+        drawWheel();
+        updateList();
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.target && ["TEXTAREA", "INPUT"].includes(event.target.tagName)) return;
+        if (event.key.toLowerCase() === "h") toggleControls();
+        if (event.key.toLowerCase() === "f") toggleFullscreen();
+      });
+
+      window.addEventListener("resize", drawWheel);
+    }
+
+    function parseNames() {
+      return els.namesInput.value
+        .split(/\r?\n/)
+        .map(n => n.trim())
+        .filter(Boolean);
+    }
+
+    function prepareNamesFromInput(deduplicate) {
+      let names = parseNames();
+      if (deduplicate) names = [...new Set(names)];
+      state.originalNames = [...names];
+      state.activeNames = [...names];
+      state.eliminated = [];
+      state.round = 0;
+      state.mode = "setup";
+      return names;
+    }
+
+    function cleanNames() {
+      if (isRunning()) return showToast("Reset before editing names during a raffle.");
+      const names = [...new Set(parseNames())].sort((a, b) => a.localeCompare(b));
+      els.namesInput.value = names.join("\n");
+      prepareNamesFromInput(false);
+      drawWheel();
+      updateUI();
+      showToast("Names cleaned and sorted.");
+    }
+
+    function saveSetup() {
+      localStorage.setItem("raffleWheelSetup", JSON.stringify({
+        names: els.namesInput.value,
+        spinSeconds: Number(els.spinSeconds.value) || 300,
+        intermissionSeconds: Number(els.intermissionSeconds.value) || 20,
+        autoContinue: els.autoContinue.checked,
+        speakToggle: els.speakToggle.checked,
+        showRemainingOnly: els.showRemainingOnly.checked
+      }));
+      showToast("Setup saved in this browser.");
+    }
+
+    function loadSetup() {
+      try {
+        return JSON.parse(localStorage.getItem("raffleWheelSetup") || "null");
+      } catch {
+        return null;
+      }
+    }
+
+    function startRaffle() {
+      if (state.mode === "spinning") return;
+      if (state.mode === "intermission") return showToast("Intermission is running.");
+
+      if (state.mode === "setup" || state.mode === "finished") {
+        prepareNamesFromInput(false);
+        if (state.activeNames.length < 2) {
+          return showToast("Add at least two names.");
+        }
+        state.mode = "ready";
+        state.round = 0;
+        state.eliminated = [];
+        announce("Raffle started", "Good luck!", "The wheel will spin until one winner remains.", "");
+      }
+
+      unlockAudio();
+      startNextSpin();
+    }
+
+    function startNextSpin() {
+      if (state.activeNames.length <= 1) {
+        finishRaffle();
+        return;
+      }
+
+      clearTimers();
+      state.mode = "spinning";
+      state.round += 1;
+      state.selectedIndex = Math.floor(Math.random() * state.activeNames.length);
+      state.selectedName = state.activeNames[state.selectedIndex];
+
+      const seconds = clamp(Number(els.spinSeconds.value) || 300, 3, 3600);
+      state.spinDurationMs = seconds * 1000;
+      state.spinStartTime = performance.now();
+      state.spinFrom = state.rotation;
+
+      const target = finalRotationForIndex(state.selectedIndex, state.activeNames.length, state.spinFrom);
+      const fullSpins = Math.max(9, Math.round(seconds / 3));
+      state.spinTo = state.spinFrom + fullSpins * Math.PI * 2 + target.delta;
+
+      els.centerCap.textContent = "SPIN";
+      els.centerCap.classList.add("pulse");
+      announce("Round " + state.round, "Spinning", "The wheel is choosing the next eliminated name.", "");
+      setTimerMode("Spinning", "The wheel will spin untill it decides who to eliminate next");
+      playLoop(getSpinMusicForCurrentRound());
+      updateUI();
+      animateSpin();
+    }
+
+    function finalRotationForIndex(index, count, currentRotation) {
+      const slice = (Math.PI * 2) / count;
+      const pointerAngle = -Math.PI / 2;
+      const desired = pointerAngle - (index * slice + slice / 2);
+      const currentMod = mod(currentRotation, Math.PI * 2);
+      const desiredMod = mod(desired, Math.PI * 2);
+      const delta = mod(desiredMod - currentMod, Math.PI * 2);
+      return { desired, delta };
+    }
+
+    function animateSpin() {
+      cancelAnimationFrame(state.rafId);
+      const tick = (now) => {
+        const elapsed = now - state.spinStartTime;
+        const t = clamp(elapsed / state.spinDurationMs, 0, 1);
+        const eased = easeOutCubic(t);
+        state.rotation = state.spinFrom + (state.spinTo - state.spinFrom) * eased;
+
+        const remaining = Math.ceil((state.spinDurationMs - elapsed) / 1000);
+        els.timer.textContent = formatTime(Math.max(0, remaining));
+
+        drawWheel();
+
+        if (t < 1) {
+          state.rafId = requestAnimationFrame(tick);
+        } else {
+          state.rotation = state.spinTo;
+          drawWheel();
+          handleElimination();
+        }
+      };
+
+      state.rafId = requestAnimationFrame(tick);
+    }
+
+    function handleElimination() {
+      stopAllSpinMusic();
+      state.mode = "announcing";
+      els.centerCap.textContent = "OUT";
+      els.centerCap.classList.remove("pulse");
+
+      const name = state.selectedName;
+      playOnce(els.fanfare);
+      speak(name + " has been eliminated.");
+      announce("Eliminated", name, name + " has been eliminated.", "eliminated");
+
+      const eliminated = state.activeNames.splice(state.selectedIndex, 1)[0];
+      state.eliminated.unshift(eliminated);
+
+      updateUI();
+      drawWheel();
+
+      if (state.activeNames.length === 1) {
+        window.setTimeout(finishRaffle, 2200);
+      } else {
+        window.setTimeout(startIntermission, 2200);
+      }
+    }
+
+    function startIntermission() {
+      state.mode = "intermission";
+      state.intermissionRemaining = clamp(Number(els.intermissionSeconds.value) || 20, 0, 3600);
+      els.centerCap.textContent = "WAIT";
+      announce("Intermission", "Next round soon", "The next spin starts after the countdown.", "");
+      setTimerMode("Intermission", "Get ready for the next round.");
+
+      if (state.intermissionRemaining <= 0) {
+        if (els.autoContinue.checked) startNextSpin();
+        return;
+      }
+
+      updateTimerText();
+
+      clearInterval(state.timerInterval);
+      state.timerInterval = setInterval(() => {
+        state.intermissionRemaining -= 1;
+        updateTimerText();
+
+        if (state.intermissionRemaining <= 0) {
+          clearInterval(state.timerInterval);
+          state.timerInterval = null;
+
+          if (els.autoContinue.checked && state.mode === "intermission") {
+            startNextSpin();
+          } else {
+            state.mode = "ready";
+            announce("Ready", "Next spin ready", "Click Start raffle to continue.", "");
+            updateUI();
+          }
+        }
+      }, 1000);
+
+      updateUI();
+    }
+
+    function skipIntermission() {
+      if (state.mode !== "intermission") return showToast("No intermission to skip.");
+      clearTimers();
+      if (state.activeNames.length <= 1) finishRaffle();
+      else startNextSpin();
+    }
+
+    function finishRaffle() {
+      clearTimers();
+      stopAllAudio(false);
+      state.mode = "finished";
+      const winner = state.activeNames[0] || "No winner";
+      els.centerCap.textContent = "WIN";
+      els.centerCap.classList.add("pulse");
+      announce("Final Winner", winner, "Congratulations! " + winner + " is the final winner.", "winner");
+      setTimerMode("Complete", "Raffle finished.");
+      els.timer.textContent = "WIN";
+      if (els.winnerFanfare.src) playOnce(els.winnerFanfare);
+      else playOnce(els.fanfare);
+      speak("Congratulations " + winner + ". You are the winner.");
+      fireConfetti();
+      updateUI();
+      drawWheel();
+    }
+
+    function resetRaffle() {
+      clearTimers();
+      cancelAnimationFrame(state.rafId);
+      stopAllAudio(false);
+      prepareNamesFromInput(false);
+      state.rotation = 0;
+      state.mode = "setup";
+      state.selectedIndex = -1;
+      state.selectedName = "";
+      els.centerCap.textContent = "READY";
+      els.centerCap.classList.remove("pulse");
+      announce("Ready", "Starting Soon", "Chat is on the Left", "");
+      setTimerMode("Timer", "Spin and intermission countdowns appear here.");
+      els.timer.textContent = "--:--";
+      drawWheel();
+      updateUI();
+      showToast("Raffle reset.");
+    }
+
+    function isRunning() {
+      return ["spinning", "announcing", "intermission", "ready"].includes(state.mode) && state.round > 0;
+    }
+
+    function drawWheel() {
+      const names = els.showRemainingOnly.checked ? state.activeNames : [...state.activeNames, ...state.eliminated];
+      const displayNames = names.length ? names : ["Add names"];
+      const count = displayNames.length;
+      const w = els.wheel.width;
+      const h = els.wheel.height;
+      const cx = w / 2;
+      const cy = h / 2;
+      const radius = Math.min(w, h) * 0.455;
+      const innerRadius = radius * 0.16;
+      const slice = (Math.PI * 2) / count;
+
+      ctx.clearRect(0, 0, w, h);
+
+      // outer glow
+      const grad = ctx.createRadialGradient(cx, cy, radius * 0.2, cx, cy, radius * 1.07);
+      grad.addColorStop(0, "rgba(255,255,255,0.05)");
+      grad.addColorStop(0.72, "rgba(255,255,255,0.08)");
+      grad.addColorStop(1, "rgba(255,255,255,0)");
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius * 1.1, 0, Math.PI * 2);
+      ctx.fill();
+
+      for (let i = 0; i < count; i++) {
+        const start = state.rotation + i * slice;
+        const end = start + slice;
+        const color = COLORS[i % COLORS.length];
+
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.arc(cx, cy, radius, start, end);
+        ctx.closePath();
+
+        if (!els.showRemainingOnly.checked && state.eliminated.includes(displayNames[i])) {
+          ctx.fillStyle = "rgba(100, 116, 139, 0.55)";
+        } else {
+          ctx.fillStyle = color;
+        }
+        ctx.fill();
+
+        ctx.strokeStyle = "rgba(2, 6, 23, 0.58)";
+        ctx.lineWidth = Math.max(2, radius * 0.006);
+        ctx.stroke();
+
+        // Text
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(start + slice / 2);
+
+        const maxTextWidth = radius * 0.58;
+        const fontSize = textSizeForCount(count, radius);
+        ctx.font = `900 ${fontSize}px Inter, system-ui, sans-serif`;
+        ctx.fillStyle = "#020617";
+        ctx.textAlign = "right";
+        ctx.textBaseline = "middle";
+
+        const label = fitText(displayNames[i], maxTextWidth);
+        const textRadius = radius * 0.86;
+        ctx.fillText(label, textRadius, 0);
+        ctx.restore();
+      }
+
+      // ring
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+      ctx.lineWidth = radius * 0.028;
+      ctx.strokeStyle = "rgba(248,250,252,0.95)";
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, innerRadius, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(15, 23, 42, 0.78)";
+      ctx.fill();
+      ctx.lineWidth = radius * 0.018;
+      ctx.strokeStyle = "rgba(248,250,252,0.9)";
+      ctx.stroke();
+    }
+
+    function textSizeForCount(count, radius) {
+      if (count <= 8) return radius * 0.06;
+      if (count <= 16) return radius * 0.045;
+      if (count <= 28) return radius * 0.035;
+      if (count <= 45) return radius * 0.027;
+      return radius * 0.021;
+    }
+
+    function fitText(text, maxWidth) {
+      if (ctx.measureText(text).width <= maxWidth) return text;
+      let shortened = text;
+      while (shortened.length > 3 && ctx.measureText(shortened + "…").width > maxWidth) {
+        shortened = shortened.slice(0, -1);
+      }
+      return shortened + "…";
+    }
+
+    function updateUI() {
+      els.roundText.textContent = String(state.round);
+      els.remainingText.textContent = String(state.activeNames.length);
+      els.eliminatedText.textContent = String(state.eliminated.length);
+
+      const total = state.activeNames.length + state.eliminated.length;
+      els.showSubtitle.textContent = total
+        ? `${total} people entered, only ${state.activeNames.length} still remain.`
+        : "Load names, then start the show.";
+
+      els.startBtn.disabled = state.mode === "spinning" || state.mode === "announcing" || state.mode === "intermission";
+      els.skipIntermissionBtn.disabled = state.mode !== "intermission";
+      els.resetBtn.disabled = state.mode === "setup" && state.eliminated.length === 0 && state.round === 0;
+
+      updateList();
+    }
+
+    function updateList() {
+      const showingEliminated = state.eliminated.length > 0 && state.mode === "finished";
+      let list = state.activeNames.map((name, index) => ({ name, kind: "active", number: index + 1 }));
+
+      if (!els.showRemainingOnly.checked) {
+        list = [
+          ...state.activeNames.map((name, index) => ({ name, kind: "active", number: index + 1 })),
+          ...state.eliminated.map((name, index) => ({ name, kind: "elim", number: state.eliminated.length - index }))
+        ];
+      }
+
+      els.listTitle.textContent = els.showRemainingOnly.checked ? "Remaining" : "All names";
+      els.listCount.textContent = String(list.length);
+
+      if (!list.length) {
+        els.peopleList.innerHTML = `<div class="tiny-note">Names will appear here.</div>`;
+        return;
+      }
+
+      els.peopleList.innerHTML = list.map(item => `
+        <div class="person ${item.kind === "elim" ? "elim" : ""}">
+          <span>${escapeHtml(item.name)}</span>
+          <small>${item.kind === "elim" ? "OUT" : "#" + item.number}</small>
+        </div>
+      `).join("");
+    }
+
+    function announce(label, name, message, kind) {
+      els.announcementLabel.textContent = label;
+      els.announcementName.textContent = name;
+      els.announcementMessage.textContent = message;
+      els.announcement.classList.toggle("eliminated", kind === "eliminated");
+      els.announcement.classList.toggle("winner", kind === "winner");
+    }
+
+    function setTimerMode(label, help) {
+      els.timerLabel.textContent = label;
+      els.timerHelp.textContent = help;
+    }
+
+    function updateTimerText() {
+      els.timer.textContent = formatTime(Math.max(0, state.intermissionRemaining));
+    }
+
+    function attachAudioFile(input, audioEl) {
+      const file = input.files && input.files[0];
+      if (!file) return;
+      const url = URL.createObjectURL(file);
+      audioEl.src = url;
+      audioEl.load();
+      showToast("Audio loaded: " + file.name);
+    }
+
+    function spinMusicLevels() {
+      return [
+        els.spinMusic1,
+        els.spinMusic2,
+        els.spinMusic3,
+        els.spinMusic4,
+        els.spinMusic5,
+        els.spinMusic6
+      ];
+    }
+
+    function getSpinMusicForCurrentRound() {
+      const total = state.originalNames.length || state.activeNames.length || 1;
+      const eliminatedCount = state.eliminated.length;
+      const eliminatedPercent = total <= 1 ? 1 : eliminatedCount / (total - 1);
+
+      // 0-16.6% = Level 1, 16.7-33.3% = Level 2, etc.
+      let levelIndex = Math.floor(eliminatedPercent * 6);
+      levelIndex = clamp(levelIndex, 0, 5);
+
+      const levels = spinMusicLevels();
+
+      // If the chosen level is empty, fall back to the closest earlier loaded level.
+      for (let i = levelIndex; i >= 0; i--) {
+        if (levels[i] && levels[i].src) return levels[i];
+      }
+
+      // If no earlier level exists, use the next loaded level.
+      for (let i = levelIndex + 1; i < levels.length; i++) {
+        if (levels[i] && levels[i].src) return levels[i];
+      }
+
+      return null;
+    }
+
+    function stopAllSpinMusic() {
+      spinMusicLevels().forEach(stopAudio);
+    }
+
+    function unlockAudio() {
+      [...spinMusicLevels(), els.fanfare, els.winnerFanfare].forEach(audio => {
+        try {
+          audio.volume = audio.volume || 1;
+        } catch {}
+      });
+    }
+
+    async function playLoop(audio) {
+      if (!audio || !audio.src) return;
+      try {
+        audio.currentTime = 0;
+        audio.loop = true;
+        await audio.play();
+      } catch {
+        showToast("Browser blocked audio. Click once on the page, then start again.");
+      }
+    }
+
+    async function playOnce(audio) {
+      if (!audio || !audio.src) return;
+      try {
+        audio.pause();
+        audio.currentTime = 0;
+        audio.loop = false;
+        await audio.play();
+      } catch {
+        // Silent fail keeps the raffle moving.
+      }
+    }
+
+    function stopAudio(audio) {
+      if (!audio) return;
+      try {
+        audio.pause();
+        audio.currentTime = 0;
+      } catch {}
+    }
+
+    function stopAllAudio(show = true) {
+      stopAllSpinMusic();
+      stopAudio(els.fanfare);
+      stopAudio(els.winnerFanfare);
+      if (window.speechSynthesis) window.speechSynthesis.cancel();
+      if (show) showToast("Audio stopped.");
+    }
+
+    function speak(text) {
+      if (!els.speakToggle.checked || !window.speechSynthesis) return;
+      try {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 0.92;
+        utterance.pitch = 1.0;
+        utterance.volume = 1;
+        window.speechSynthesis.speak(utterance);
+      } catch {}
+    }
+
+    function toggleControls() {
+      document.body.classList.toggle("controls-hidden");
+      drawWheel();
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen?.();
+      } else {
+        document.exitFullscreen?.();
+      }
+    }
+
+    function clearTimers() {
+      if (state.timerInterval) clearInterval(state.timerInterval);
+      if (state.intermissionTimeout) clearTimeout(state.intermissionTimeout);
+      state.timerInterval = null;
+      state.intermissionTimeout = null;
+    }
+
+    function fireConfetti() {
+      const colors = COLORS;
+      const pieces = 180;
+      for (let i = 0; i < pieces; i++) {
+        const piece = document.createElement("div");
+        piece.className = "confetti-piece";
+        piece.style.left = Math.random() * 100 + "vw";
+        piece.style.background = colors[i % colors.length];
+        piece.style.animationDuration = (2.5 + Math.random() * 3.2) + "s";
+        piece.style.animationDelay = (Math.random() * 0.8) + "s";
+        piece.style.transform = `rotate(${Math.random() * 360}deg)`;
+        document.body.appendChild(piece);
+        window.setTimeout(() => piece.remove(), 6500);
+      }
+    }
+
+    function showToast(message) {
+      els.toast.textContent = message;
+      els.toast.classList.add("visible");
+      clearTimeout(showToast.timeout);
+      showToast.timeout = setTimeout(() => els.toast.classList.remove("visible"), 2200);
+    }
+
+    function cleanStringForHtml(s) {
+      return String(s).replace(/[&<>"']/g, ch => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      }[ch]));
+    }
+
+    function escapeHtml(s) {
+      return cleanStringForHtml(s);
+    }
+
+    function formatTime(totalSeconds) {
+      if (totalSeconds === "WIN") return "WIN";
+      totalSeconds = Math.max(0, Math.floor(totalSeconds));
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
+      return String(minutes).padStart(2, "0") + ":" + String(seconds).padStart(2, "0");
+    }
+
+    function easeOutCubic(t) {
+      return 1 - Math.pow(1 - t, 3);
+    }
+
+    function mod(n, m) {
+      return ((n % m) + m) % m;
+    }
+
+    function clamp(n, min, max) {
+      return Math.min(max, Math.max(min, n));
+    }
+
+    function shuffleArray(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    init();
+  </script>
+</body>
+</html>
